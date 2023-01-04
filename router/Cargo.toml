@@ -1,0 +1,8 @@
+[package]
+name = "router"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+matchit = "0.4.2"
+fastly = "0.8.9"

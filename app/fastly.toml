@@ -1,0 +1,9 @@
+authors = [""]
+description = ""
+language = "rust"
+manifest_version = 2
+name = "app"
+service_id = ""
+
+[scripts]
+  build = "cargo build --bin app --release --target wasm32-wasi --color always"
