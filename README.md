@@ -10,8 +10,6 @@ Parameterize routes and access the parameter values from within a handler. Each 
 ```rust
 use fastly::http::StatusCode;
 use fastly::{Error, Request, Response};
-use std::collections::HashMap;
-
 use router::Router;
 
 #[fastly::main]
