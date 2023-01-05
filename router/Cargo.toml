@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-matchit = "0.4.2"
+matchit = "0.7.0"
 fastly = "0.8.9"

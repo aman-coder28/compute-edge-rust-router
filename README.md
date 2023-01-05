@@ -1,5 +1,7 @@
 ## Simple Edge Router
 
+> A port of ([Workers-rs Router](https://github.com/cloudflare/workers-rs/blob/main/worker/src/router.rs))
+
 **Work-in-progress** ergonomic Router for Fastly Compute@Edge Applications that's using Rust
 
 Parameterize routes and access the parameter values from within a handler. Each handler function takes a
@@ -18,7 +20,7 @@ fn main(req: Request) -> Result<Response, Error> {
 
   Ok(
     router
-      .get("/", |_, _| {
+      .on("/", |_, _| {
         Ok(Response::from_status(StatusCode::OK).with_body_text_plain("Hello from Rust at the Edge."))
       })
       .get("/params/:param", |_request, ctx| {
@@ -29,7 +31,7 @@ fn main(req: Request) -> Result<Response, Error> {
       .get("/query/", |request, _ctx| {
         let qs: HashMap<String, String> = request.get_query()?;
 
-        let qs_value = match qs.get("text") {
+        let qs_value =qs.get("text") {
           Some(text) => text.to_string(),
           _ => String::from(""),
         };
@@ -40,3 +42,5 @@ fn main(req: Request) -> Result<Response, Error> {
   )
 }
 ```
+
+

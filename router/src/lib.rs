@@ -1,7 +1,7 @@
 use fastly::http::{Method, StatusCode};
 use fastly::{Error, Request, Response};
 
-use matchit::{Match, Node};
+use matchit::{Match, Router as Node};
 use std::collections::HashMap;
 
 type HandlerFn = fn(Request, RouteContext) -> Result<Response, Error>;
@@ -31,8 +31,6 @@ pub struct Router {
   handlers: HashMap<Method, Node<Handler>>,
 }
 
-/// Container for a route's parsed parametersata, and environment bindings from the Runtime (such
-/// as KV Storesurable Objects, Variables, and Secrets).
 pub struct RouteContext {
   params: RouteParams,
 }
@@ -45,11 +43,24 @@ impl RouteContext {
 }
 
 impl Router {
-  /// Construct a new `Router`. Or, call `Router::with_data(D)` to add arbitrary data that will be
+  /// Construct a new `Router`. Or, call `Router::with_data()` to add arbitrary data that will be
   /// available to your various routes.
   pub fn new() -> Self {
     Self::with_data()
   }
+}
+
+pub fn methods_all() -> Vec<Method> {
+  vec![
+    Method::GET,
+    Method::POST,
+    Method::DELETE,
+    Method::HEAD,
+    Method::OPTIONS,
+    Method::CONNECT,
+    Method::PATCH,
+    Method::TRACE,
+  ]
 }
 
 impl<'a: 'a> Router {
@@ -59,6 +70,7 @@ impl<'a: 'a> Router {
       handlers: HashMap::new(),
     }
   }
+
   /// Register an HTTP handler that will exclusively respond to HEAD requests.
   pub fn head(mut self, pattern: &str, func: HandlerFn) -> Self {
     self.add_handler(pattern, Handler::Sync(func), vec![Method::HEAD]);
@@ -101,6 +113,13 @@ impl<'a: 'a> Router {
     self
   }
 
+  /// Register an HTTP handler that will respond to any requests.
+  pub fn on(mut self, pattern: &str, func: HandlerFn) -> Self {
+    self.add_handler(pattern, Handler::Sync(func), methods_all());
+
+    self
+  }
+
   fn add_handler(&mut self, pattern: &str, func: Handler, methods: Vec<Method>) {
     for method in methods {
       self
@@ -117,7 +136,7 @@ impl<'a: 'a> Router {
     }
   }
 
-  /// Handle the request provided to the `Router` and return a `Future`.
+  /// Handle the request provided to the `Router`.
   pub fn run(self, req: Request) -> Result<Response, Error> {
     let handlers = self.handlers;
 
@@ -133,21 +152,7 @@ impl<'a: 'a> Router {
       }
     }
 
-    // Needs improvments
-    for method in vec![
-      Method::GET,
-      Method::POST,
-      Method::DELETE,
-      Method::HEAD,
-      Method::OPTIONS,
-      Method::CONNECT,
-      Method::PATCH,
-      Method::TRACE,
-    ] {
-      if method == Method::GET || method == Method::OPTIONS || method == Method::TRACE {
-        continue;
-      }
-
+    for method in methods_all() {
       if let Some(handlers) = handlers.get(&method) {
         if let Ok(Match { .. }) = handlers.at(&req.get_path()) {
           return Ok(

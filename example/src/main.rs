@@ -1,7 +1,6 @@
-use std::collections::HashMap;
-
-use fastly::http::{request, StatusCode};
+use fastly::http::StatusCode;
 use fastly::{Error, Request, Response};
+use std::collections::HashMap;
 
 use router::Router;
 
@@ -11,7 +10,7 @@ fn main(req: Request) -> Result<Response, Error> {
 
   Ok(
     router
-      .get("/", |_, _| {
+      .on("/", |_, _| {
         Ok(Response::from_status(StatusCode::OK).with_body_text_plain("Hello from Rust at the Edge."))
       })
       .get("/params/:param", |_request, ctx| {
