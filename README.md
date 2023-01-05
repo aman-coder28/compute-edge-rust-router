@@ -1,6 +1,6 @@
 ## Simple Edge Router
 
-> A port of ([Workers-rs Router](https://github.com/cloudflare/workers-rs/blob/main/worker/src/router.rs))
+> A port of [Workers-rs Router](https://github.com/cloudflare/workers-rs/blob/main/worker/src/router.rs)
 
 **Work-in-progress** ergonomic Router for Fastly Compute@Edge Applications that's using Rust
 
